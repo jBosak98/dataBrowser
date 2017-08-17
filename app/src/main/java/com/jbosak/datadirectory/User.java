@@ -11,10 +11,6 @@ public class User {
     public final int id;
     public final String details;
 
-    public DataFactory getFactory() {
-        return factory;
-    }
-
     public String getName() {
         return name;
     }
@@ -24,7 +20,9 @@ public class User {
     }
 
     public String getDetails() {
-        return details;
+        StringBuilder builder = new StringBuilder();
+        builder.append("Address: " + factory.getAddress()).append(factory.getCity());
+        return builder.toString();
     }
 
     public User(int id) {

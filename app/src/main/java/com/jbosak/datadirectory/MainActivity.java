@@ -1,8 +1,11 @@
 package com.jbosak.datadirectory;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +18,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     List<User> userList = new ArrayList<User>();
-    private static final int COUNT = 200;
+    private static final int COUNT_OF_USER = 200;
 
 
     @Override
@@ -33,15 +36,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle savedState) {
-        super.onSaveInstanceState(savedState);
-        savedState.putString("TITLE", "TITLe");
-    }
 
     private void addingUser() {
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < COUNT_OF_USER; i++) {
             User user = new User(i);
+            user.getDetails();
             userList.add(i,user);
         }
     }
@@ -57,9 +56,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(NameListViewHolder holder, final int position) {
+        public void onBindViewHolder(final NameListViewHolder holder, final int position) {
             holder.idView.setText(String.valueOf(userList.get(position).getId()+1));
             holder.NameTextView.setText(userList.get(position).getName());
+            holder.details = userList.get(position).getDetails();
 
             holder.view.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -72,8 +72,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                     Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra("TITLE", "TITLE");
+                    intent.putExtra(ItemDetailActivity.TOOLBAR_TITLE, holder.NameTextView.getText());
+                    intent.putExtra(ItemDetailActivity.USER_DETAILS,holder.details);
                     context.startActivity(intent);
+
+
 
                 }
             });
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         public final TextView NameTextView;
         public final TextView idView;
         public final View view;
+        public String details;
 
 
         public NameListViewHolder(View view) {
