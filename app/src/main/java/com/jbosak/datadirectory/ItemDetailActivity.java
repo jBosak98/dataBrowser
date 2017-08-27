@@ -1,7 +1,6 @@
 package com.jbosak.datadirectory;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,61 +12,90 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import static android.R.drawable.btn_star_big_off;
+import static android.R.drawable.star_big_on;
 
 
 public class ItemDetailActivity extends AppCompatActivity {
     public static final String TOOLBAR_TITLE = "TOOLBAR_TITLE";
     public static final String USER_DETAILS = "USER_DETAILS";
+    public static final String USER_ID = "USER_ID";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
+        final String title = getIntent().getStringExtra(ItemDetailActivity.TOOLBAR_TITLE);
+
 
         Toolbar detailToolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(detailToolbar);
-        detailToolbar.setTitle("abc");
+
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+
+        if(appBarLayout != null) {
+
+            if (getIntent().getStringExtra(ItemDetailActivity.TOOLBAR_TITLE) != null) {
+                appBarLayout.setTitle(getIntent().getStringExtra(ItemDetailActivity.TOOLBAR_TITLE));
+            }
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            } if(savedInstanceState != null) {
+
+
+            if (savedInstanceState.containsKey(ItemDetailActivity.TOOLBAR_TITLE)) {
+                appBarLayout.setTitle(savedInstanceState.getString(ItemDetailActivity.TOOLBAR_TITLE));
+            }
+        }
+
+
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setTag(title);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                fab.setImageResource(btn_star_big_off);
+
+                Snackbar.make(view, "Added to favourite" + title, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
 
-
-
         ActionBar actionBar = getSupportActionBar();
-        //actionBar.setTitle("abc");
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
         }
         if (savedInstanceState == null) {
 
             Bundle arguments = getIntent().getExtras();
-            arguments.putString(TOOLBAR_TITLE, getIntent().getStringExtra(ItemDetailActivity.TOOLBAR_TITLE));
+            arguments.putString(TOOLBAR_TITLE, title);
             arguments.putString(USER_DETAILS, getIntent().getStringExtra(ItemDetailActivity.USER_DETAILS));
             UserDetailFragment fragment = new UserDetailFragment();
 
             fragment.setArguments(arguments);
-            //fragment.setArguments(savedInstanceState);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment).commit();
         }
 
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            navigateUpTo(new Intent(this, MainActivity.class));
-            return true;
+
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString(ItemDetailActivity.TOOLBAR_TITLE, getIntent().getStringExtra(ItemDetailActivity.TOOLBAR_TITLE));
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
 }

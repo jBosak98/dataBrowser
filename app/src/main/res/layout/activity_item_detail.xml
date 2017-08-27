@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.jbosak.datadirectory.ItemDetailActivity"
-    tools:ignore="MergeRootFrame">
+    tools:ignore="MergeRootFrame"
+    android:id="@+id/coordinatorLayout">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -49,6 +50,6 @@
         android:layout_margin="16dp"
         app:layout_anchor="@+id/item_detail_container"
         app:layout_anchorGravity="top|end"
-        app:srcCompat="@android:drawable/stat_notify_chat" />
+        app:srcCompat="@android:drawable/star_big_on" />
 
 </android.support.design.widget.CoordinatorLayout>
