@@ -1,11 +1,17 @@
 package com.jbosak.datadirectory;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +19,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONException;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -25,18 +33,15 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<User> userList = new ArrayList<>();
     private NameListAdapter adapter = new NameListAdapter();
     private RecyclerView recyclerView;
-
-
-
-
-
+    private String[] PERMISSIONS = {Manifest.permission.INTERNET, Manifest.permission.ACCESS_NETWORK_STATE};// List of permissions required
+    private static final int PERMISSION_ALL = 101;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        askPermission();
 
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
 
@@ -48,8 +53,16 @@ public class MainActivity extends AppCompatActivity {
             userList = savedInstanceState.getParcelableArrayList(STATE_USERS);
 
         } else if (savedInstanceState == null) {
+            if(isNetworkAvailable())
             addingUser();
         }
+
+    }
+
+    private boolean isNetworkAvailable() {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null;
 
     }
 
@@ -137,6 +150,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+    public void askPermission() {
+        for (String permission : PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(PERMISSIONS, PERMISSION_ALL);
+                    return;
+                }
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+
+        switch (requestCode) {
+            case PERMISSION_ALL: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(this, "Until you grant the permission, we cannot proceed further", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
     }
 
 }
